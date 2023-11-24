@@ -7,21 +7,22 @@ namespace Mapify.Extensions;
 
 public static class IQueryableExtensions
 {
-    ///// <summary>
-    ///// Finds an element by identifier.
-    ///// </summary>
-    ///// <param name="id">The id.</param>
-    ///// <returns></returns>
-    //public static async Task<T> FindByIdAsync<T, TId>(this IQueryable query, TId id)
-    //{
-    //    var result = default(T);
+    /// <summary>
+    /// Finds an element by identifier.
+    /// </summary>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="id">The id.</param>
+    /// <returns></returns>
+    public static async Task<T> FindByIdAsync<T, TId>(this IQueryable query, TId id)
+    {
+        var result = default(T);
 
-    //    var projectedQuery = query.ProjectToType<T>();
-    //    projectedQuery = projectedQuery.ApplyFiltering($"Id = {id}");
-    //    result = await projectedQuery.SingleOrDefaultAsync();
+        var projectedQuery = query.ProjectToType<T>();
+        projectedQuery = projectedQuery.ApplyFiltering($"Id = {id}");
+        result = await projectedQuery.SingleOrDefaultAsync();
 
-    //    return result;
-    //}
+        return result;
+    }
 
     /// <summary>
     /// Finds a list of elements from a filter.
