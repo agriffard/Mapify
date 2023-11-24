@@ -26,6 +26,7 @@ public static class IQueryableExtensions
     /// <summary>
     /// Finds a list of elements from a filter.
     /// </summary>
+    /// <param name="query">The IQueryable.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="orderBy">The sort.</param>
     /// <returns></returns>
@@ -50,8 +51,9 @@ public static class IQueryableExtensions
     /// <summary>
     /// Finds a list of elements from a filter.
     /// </summary>
-    /// <param name="filter">The filter.</param>
-    /// <param name="orderBy">The sort.</param>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="filterExpression">The filter expression.</param>
+    /// <param name="orderByExpression">The sort expression.</param>
     /// <returns></returns>
     public static async Task<List<T>> FindListAsync<T>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, IComparable>> orderByExpression)
     {
@@ -74,6 +76,7 @@ public static class IQueryableExtensions
     /// <summary>
     /// Finds one element from a filter.
     /// </summary>
+    /// <param name="query">The IQueryable.</param>
     /// <param name="filter">The filter.</param>
     /// <returns></returns>
     public static async Task<T> FindOneAsync<T>(this IQueryable query, string filter)
@@ -90,6 +93,7 @@ public static class IQueryableExtensions
     /// <summary>
     /// Finds one element from a filter expression.
     /// </summary>
+    /// <param name="query">The IQueryable.</param>
     /// <param name="filterExpression">The filter expression.</param>
     /// <returns></returns>
     public static async Task<T> FindOneAsync<T>(this IQueryable query, Expression<Func<T, bool>> filterExpression)
