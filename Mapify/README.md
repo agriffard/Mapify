@@ -17,5 +17,5 @@ Context.Entity.GetPagedResultAsync<EntityModel>(pageIndex, pageSize, filter, ord
 
 ## Credits
 
-https://github.com/alirezanet/Gridify
+https://github.com/alirezanet/Gridify  
 https://github.com/MapsterMapper/Mapster
