@@ -43,7 +43,7 @@ jobs:
         name: nuget
         if-no-files-found: error
         retention-days: 7
-        path: ${{ env.NuGetDirectory }}/Mapify.1.*.nupkg
+        path: ${{ env.NuGetDirectory }}/Mapify.8.*.nupkg
 
   # run_test:
   #   runs-on: ubuntu-latest
