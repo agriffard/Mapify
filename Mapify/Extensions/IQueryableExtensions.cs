@@ -55,8 +55,9 @@ public static class IQueryableExtensions
     /// <param name="query">The IQueryable.</param>
     /// <param name="filterExpression">The filter expression.</param>
     /// <param name="orderByExpression">The sort expression.</param>
+    /// <param name="descending">If the sort is descending.</param>
     /// <returns></returns>
-    public static async Task<List<T>> FindListAsync<T, TOrderBy>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression)
+    public static async Task<List<T>> FindListAsync<T, TOrderBy>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
     {
         var result = new List<T>();
 
@@ -67,7 +68,7 @@ public static class IQueryableExtensions
         }
         if (orderByExpression != null)
         {
-            projectedQuery = projectedQuery.OrderBy(orderByExpression);
+            projectedQuery = descending ? projectedQuery.OrderByDescending(orderByExpression) : projectedQuery.OrderBy(orderByExpression);
         }
         result = await projectedQuery.ToListAsync();
 
@@ -111,6 +112,11 @@ public static class IQueryableExtensions
     /// <summary>
     /// Gets a paged list and a total count of entities.
     /// </summary>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="page">The page.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <param name="filter">The filter.</param>
+    /// <param name="orderBy">The sort.</param>
     public static async Task<(List<T> results, int totalCount)> GetPagedListAsync<T>(this IQueryable query, int page, int pageSize, string filter, string orderBy)
     {
         var result = new List<T>();
@@ -122,7 +128,7 @@ public static class IQueryableExtensions
             data = data.ApplyFiltering(filter);
         }
 
-        int totalCount = await data.CountAsync();
+        var totalCount = await data.CountAsync();
 
         if (orderBy != null)
         {
@@ -140,11 +146,70 @@ public static class IQueryableExtensions
     }
 
     /// <summary>
+    /// Gets a paged list and a total count of entities.
+    /// </summary>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="page">The page.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <param name="filterExpression">The filter expression.</param>
+    /// <param name="orderByExpression">The sort expression.</param>
+    /// <param name="descending">If the sort is descending.</param>
+    public static async Task<(List<T> results, int totalCount)> GetPagedListAsync<T, TOrderBy>(this IQueryable query, int page, int pageSize, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
+    {
+        var result = new List<T>();
+
+        var data = query.ProjectToType<T>();
+
+        if (filterExpression != null)
+        {
+            data = data.Where(filterExpression);
+        }
+
+        var totalCount = await data.CountAsync();
+
+        if (orderByExpression != null)
+        {
+            data = descending ? data.OrderByDescending(orderByExpression) : data.OrderBy(orderByExpression);
+        }
+
+        if (page > 0 && pageSize > 0)
+        {
+            data = data.ApplyPaging(page, pageSize);
+        }
+
+        result = await data.ToListAsync();
+
+        return new(result, totalCount);
+    }
+
+    /// <summary>
     /// Gets a paged result of entities.
     /// </summary>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="page">The page.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <param name="filter">The filter.</param>
+    /// <param name="orderBy">The sort.</param>
     public static async Task<PagedResult<T>> GetPagedResultAsync<T>(this IQueryable query, int page, int pageSize, string filter, string orderBy)
     {
         var (results, totalCount) = await GetPagedListAsync<T>(query, page, pageSize, filter, orderBy);
+        var result = new PagedResult<T>(results, page, pageSize, totalCount);
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets a paged result of entities.
+    /// </summary>
+    /// <param name="query">The IQueryable.</param>
+    /// <param name="page">The page.</param>
+    /// <param name="pageSize">The page size.</param>
+    /// <param name="filterExpression">The filter expression.</param>
+    /// <param name="orderByExpression">The sort expression.</param>
+    /// <param name="descending">If the sort is descending.</param>
+    public static async Task<PagedResult<T>> GetPagedResultAsync<T, TOrderBy>(this IQueryable query, int page, int pageSize, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
+    {
+        var (results, totalCount) = await GetPagedListAsync<T, TOrderBy>(query, page, pageSize, filterExpression, orderByExpression, descending);
         var result = new PagedResult<T>(results, page, pageSize, totalCount);
 
         return result;
