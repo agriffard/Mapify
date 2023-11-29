@@ -56,7 +56,7 @@ public static class IQueryableExtensions
     /// <param name="filterExpression">The filter expression.</param>
     /// <param name="orderByExpression">The sort expression.</param>
     /// <returns></returns>
-    public static async Task<List<T>> FindListAsync<T>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, IComparable>> orderByExpression)
+    public static async Task<List<T>> FindListAsync<T, TOrderBy>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression)
     {
         var result = new List<T>();
 
