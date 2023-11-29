@@ -13,8 +13,6 @@ Context.Entity.FindOneAsync<EntityModel>(filter, orderBy);
 Context.Entity.FindOneAsync<EntityModel>(x => x.Property == value);
 (List<T> results, int totalCount) Context.Entity.GetPagedListAsync<EntityModel>(pageIndex, pageSize, filter, orderBy);
 (List<T> results, int totalCount) Context.Entity.GetPagedListAsync<EntityModel, int>(pageIndex, pageSize, x => x.Property == value, x => x.Id);
-Context.Entity.GetPagedResultAsync<EntityModel>(pageIndex, pageSize, filter, orderBy);
-Context.Entity.GetPagedResultAsync<EntityModel, int>(pageIndex, pageSize, x => x.Property == value, x => x.Id);
 ```
 
 ## Credits

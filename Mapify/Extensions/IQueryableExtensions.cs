@@ -1,8 +1,3 @@
-using System.Linq.Expressions;
-using Gridify;
-using Mapster;
-using Microsoft.EntityFrameworkCore;
-
 namespace Mapify.Extensions;
 
 public static class IQueryableExtensions
@@ -180,38 +175,5 @@ public static class IQueryableExtensions
         result = await data.ToListAsync();
 
         return new(result, totalCount);
-    }
-
-    /// <summary>
-    /// Gets a paged result of entities.
-    /// </summary>
-    /// <param name="query">The IQueryable.</param>
-    /// <param name="page">The page.</param>
-    /// <param name="pageSize">The page size.</param>
-    /// <param name="filter">The filter.</param>
-    /// <param name="orderBy">The sort.</param>
-    public static async Task<PagedResult<T>> GetPagedResultAsync<T>(this IQueryable query, int page, int pageSize, string filter, string orderBy)
-    {
-        var (results, totalCount) = await GetPagedListAsync<T>(query, page, pageSize, filter, orderBy);
-        var result = new PagedResult<T>(results, page, pageSize, totalCount);
-
-        return result;
-    }
-
-    /// <summary>
-    /// Gets a paged result of entities.
-    /// </summary>
-    /// <param name="query">The IQueryable.</param>
-    /// <param name="page">The page.</param>
-    /// <param name="pageSize">The page size.</param>
-    /// <param name="filterExpression">The filter expression.</param>
-    /// <param name="orderByExpression">The sort expression.</param>
-    /// <param name="descending">If the sort is descending.</param>
-    public static async Task<PagedResult<T>> GetPagedResultAsync<T, TOrderBy>(this IQueryable query, int page, int pageSize, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
-    {
-        var (results, totalCount) = await GetPagedListAsync<T, TOrderBy>(query, page, pageSize, filterExpression, orderByExpression, descending);
-        var result = new PagedResult<T>(results, page, pageSize, totalCount);
-
-        return result;
     }
 }
