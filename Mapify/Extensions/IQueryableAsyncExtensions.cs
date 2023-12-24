@@ -1,6 +1,6 @@
 namespace Mapify.Extensions;
 
-public static class IQueryableExtensions
+public static class IQueryableAsyncExtensions
 {
     /// <summary>
     /// Finds an element by identifier.
@@ -8,13 +8,13 @@ public static class IQueryableExtensions
     /// <param name="query">The IQueryable.</param>
     /// <param name="id">The id.</param>
     /// <returns></returns>
-    public static T FindById<T, TId>(this IQueryable query, TId id)
+    public static async Task<T> FindByIdAsync<T, TId>(this IQueryable query, TId id)
     {
         var result = default(T);
 
         var projectedQuery = query.ProjectToType<T>();
         projectedQuery = projectedQuery.ApplyFiltering($"Id = {id}");
-        result = projectedQuery.FirstOrDefault();
+        result = await projectedQuery.FirstOrDefaultAsync();
 
         return result;
     }
@@ -26,7 +26,7 @@ public static class IQueryableExtensions
     /// <param name="filter">The filter.</param>
     /// <param name="orderBy">The sort.</param>
     /// <returns></returns>
-    public static List<T> FindList<T>(this IQueryable query, string filter, string? orderBy = null)
+    public static async Task<List<T>> FindListAsync<T>(this IQueryable query, string filter, string? orderBy = null)
     {
         var result = new List<T>();
 
@@ -39,7 +39,7 @@ public static class IQueryableExtensions
         {
             projectedQuery = projectedQuery.ApplyOrdering(orderBy);
         }
-        result = projectedQuery.ToList();
+        result = await projectedQuery.ToListAsync();
 
         return result;
     }
@@ -52,7 +52,7 @@ public static class IQueryableExtensions
     /// <param name="orderByExpression">The sort expression.</param>
     /// <param name="descending">If the sort is descending.</param>
     /// <returns></returns>
-    public static List<T> FindList<T, TOrderBy>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
+    public static async Task<List<T>> FindListAsync<T, TOrderBy>(this IQueryable query, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
     {
         var result = new List<T>();
 
@@ -65,7 +65,7 @@ public static class IQueryableExtensions
         {
             projectedQuery = descending ? projectedQuery.OrderByDescending(orderByExpression) : projectedQuery.OrderBy(orderByExpression);
         }
-        result = projectedQuery.ToList();
+        result = await projectedQuery.ToListAsync();
 
         return result;
     }
@@ -76,13 +76,13 @@ public static class IQueryableExtensions
     /// <param name="query">The IQueryable.</param>
     /// <param name="filter">The filter.</param>
     /// <returns></returns>
-    public static T FindOne<T>(this IQueryable query, string filter)
+    public static async Task<T> FindOneAsync<T>(this IQueryable query, string filter)
     {
         var result = default(T);
 
         var projectedQuery = query.ProjectToType<T>();
         projectedQuery = projectedQuery.ApplyFiltering(filter);
-        result = projectedQuery.FirstOrDefault();
+        result = await projectedQuery.FirstOrDefaultAsync();
 
         return result;
     }
@@ -93,13 +93,13 @@ public static class IQueryableExtensions
     /// <param name="query">The IQueryable.</param>
     /// <param name="filterExpression">The filter expression.</param>
     /// <returns></returns>
-    public static T FindOne<T>(this IQueryable query, Expression<Func<T, bool>> filterExpression)
+    public static async Task<T> FindOneAsync<T>(this IQueryable query, Expression<Func<T, bool>> filterExpression)
     {
         var result = default(T);
 
         var projectedQuery = query.ProjectToType<T>();
         projectedQuery = projectedQuery.Where(filterExpression);
-        result = projectedQuery.FirstOrDefault();
+        result = await projectedQuery.FirstOrDefaultAsync();
 
         return result;
     }
@@ -112,7 +112,7 @@ public static class IQueryableExtensions
     /// <param name="pageSize">The page size.</param>
     /// <param name="filter">The filter.</param>
     /// <param name="orderBy">The sort.</param>
-    public static (List<T> results, int totalCount) GetPagedList<T>(this IQueryable query, int page, int pageSize, string filter, string orderBy)
+    public static async Task<(List<T> results, int totalCount)> GetPagedListAsync<T>(this IQueryable query, int page, int pageSize, string filter, string orderBy)
     {
         var result = new List<T>();
 
@@ -123,7 +123,7 @@ public static class IQueryableExtensions
             data = data.ApplyFiltering(filter);
         }
 
-        var totalCount = data.Count();
+        var totalCount = await data.CountAsync();
 
         if (orderBy != null)
         {
@@ -135,7 +135,7 @@ public static class IQueryableExtensions
             data = data.ApplyPaging(page, pageSize);
         }
 
-        result = data.ToList();
+        result = await data.ToListAsync();
 
         return new(result, totalCount);
     }
@@ -149,7 +149,7 @@ public static class IQueryableExtensions
     /// <param name="filterExpression">The filter expression.</param>
     /// <param name="orderByExpression">The sort expression.</param>
     /// <param name="descending">If the sort is descending.</param>
-    public static (List<T> results, int totalCount) GetPagedList<T, TOrderBy>(this IQueryable query, int page, int pageSize, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
+    public static async Task<(List<T> results, int totalCount)> GetPagedListAsync<T, TOrderBy>(this IQueryable query, int page, int pageSize, Expression<Func<T, bool>> filterExpression, Expression<Func<T, TOrderBy>> orderByExpression, bool descending = false)
     {
         var result = new List<T>();
 
@@ -160,7 +160,7 @@ public static class IQueryableExtensions
             data = data.Where(filterExpression);
         }
 
-        var totalCount = data.Count();
+        var totalCount = await data.CountAsync();
 
         if (orderByExpression != null)
         {
@@ -172,7 +172,7 @@ public static class IQueryableExtensions
             data = data.ApplyPaging(page, pageSize);
         }
 
-        result = data.ToList();
+        result = await data.ToListAsync();
 
         return new(result, totalCount);
     }
